@@ -10,10 +10,22 @@ sales_details_df = pd.read_csv('data/sales_details.csv', sep=';')
 
 # Create a dict to store data for the "Tables" sheet
 tables_data = {
-    "Table Name": ["product", "product_category", "product_subcategory", "sales", "special_offer", "sales_details"],
-    "Description": ["Information about products", "Information about product categories",
-                    "Information about product subcategories", "Information about sales transactions",
-                    "Information about special offers", "Details of sales transactions"],
+    "Table Name": [
+        "product",
+        "product_category",
+        "product_subcategory",
+        "sales", "special_offer",
+        "sales_details"
+    ],
+    
+    "Description": [
+        "Information about products",
+        "Information about product categories",
+        "Information about product subcategories",
+        "Information about sales transactions",
+
+        "Information about special offers", "Details of sales transactions"
+    ],
 
     "Total Records": [
         len(product_df),
@@ -110,7 +122,6 @@ try:
 except Exception as e:
     print("An error occurred:", str(e))
 
-
 # Group sales_details by product and sum the quantities sold
 product_sales = sales_details_df.groupby('ProductID')['OrderQty'].sum().reset_index()
 
@@ -143,7 +154,8 @@ sales_details_with_offer = pd.merge(sales_details_df, special_offer_df, on='Spec
 product_sales_with_offer = sales_details_with_offer.groupby('ProductID')['SalesOrderID'].nunique().reset_index()
 
 # Merge with product_df to get product names
-product_sales_with_offer = pd.merge(product_sales_with_offer, product_df[['ProductID', 'Name']], on='ProductID', how='left')
+product_sales_with_offer = pd.merge(product_sales_with_offer, product_df[['ProductID', 'Name']], on='ProductID',
+                                    how='left')
 
 # Sort by number of orders in descending order
 product_sales_with_offer = product_sales_with_offer.sort_values(by='SalesOrderID', ascending=False)
@@ -186,7 +198,8 @@ print("ID(s) of the Customer(s) with the Most Orders:")
 print(most_orders_customers['CustomerID'].tolist())
 
 # Calculate frequency segment
-customer_orders['frequency'] = pd.cut(customer_orders['SalesOrderID'], bins=[0, 1, 3, float('inf')], labels=['New', 'Repeated', 'Fan'])
+customer_orders['frequency'] = pd.cut(customer_orders['SalesOrderID'], bins=[0, 1, 3, float('inf')],
+                                      labels=['New', 'Repeated', 'Fan'])
 
 # Define monetary value bins and labels
 monetary_bins = [0, 100, 10000, float('inf')]
@@ -196,7 +209,8 @@ monetary_labels = ['Frugal Spender', 'Medium Spender', 'High Spender']
 customer_purchase_amount = sales_df.groupby('CustomerID')['TotalDue'].sum().reset_index()
 
 # Calculate monetary value segment
-customer_purchase_amount['monetary_value'] = pd.cut(customer_purchase_amount['TotalDue'], bins=monetary_bins, labels=monetary_labels)
+customer_purchase_amount['monetary_value'] = pd.cut(customer_purchase_amount['TotalDue'], bins=monetary_bins,
+                                                    labels=monetary_labels)
 
 # Merge customer_orders and customer_purchase_amount
 customer_segments = pd.merge(customer_orders, customer_purchase_amount, on='CustomerID', how='outer')
